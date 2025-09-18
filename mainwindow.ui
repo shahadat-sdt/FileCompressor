@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>400</height>
+    <width>700</width>
+    <height>500</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,10 +15,10 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
-
-    <!-- Menu-like buttons -->
+    
+    <!-- Toolbar-like buttons -->
     <item>
-     <layout class="QHBoxLayout" name="fileOptionsLayout">
+     <layout class="QHBoxLayout" name="topButtonsLayout">
       <item>
        <widget class="QPushButton" name="pickFileButton">
         <property name="text">
@@ -33,10 +33,17 @@
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QPushButton" name="editFileButton">
+        <property name="text">
+         <string>Edit File</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
 
-    <!-- File information display -->
+    <!-- File Information -->
     <item>
      <widget class="QGroupBox" name="fileInfoGroupBox">
       <property name="title">
@@ -106,16 +113,9 @@
      </widget>
     </item>
 
-    <!-- Action buttons -->
+    <!-- Action Buttons -->
     <item>
      <layout class="QHBoxLayout" name="actionButtonsLayout">
-      <item>
-       <widget class="QPushButton" name="editFileButton">
-        <property name="text">
-         <string>Edit File</string>
-        </property>
-       </widget>
-      </item>
       <item>
        <widget class="QPushButton" name="compressButton">
         <property name="text">
@@ -133,7 +133,7 @@
      </layout>
     </item>
 
-    <!-- Status label -->
+    <!-- Status Label -->
     <item>
      <widget class="QLabel" name="statusLabel">
       <property name="text">

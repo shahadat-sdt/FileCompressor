@@ -13,11 +13,34 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    // Modern flat button style
+    QString btnStyle =
+        "QPushButton {"
+        "font-size: 12pt;"
+        "padding: 8px 20px;"
+        "background-color: #0078D7;"
+        "color: white;"
+        "border: none;"
+        "border-radius: 4px;"
+        "}"
+        "QPushButton:hover { background-color: #005A9E; }"
+        "QPushButton:pressed { background-color: #004578; }";
+
+    ui->pickFileButton->setStyleSheet(btnStyle);
+    ui->createFileButton->setStyleSheet(btnStyle);
+    ui->editFileButton->setStyleSheet(btnStyle);
+    ui->compressButton->setStyleSheet(btnStyle);
+    ui->decompressButton->setStyleSheet(btnStyle);
+
+    // Optional: add spacing between layouts
+    ui->centralwidget->layout()->setSpacing(10);
+
     // Disable edit/compress/decompress buttons initially
     ui->editFileButton->setEnabled(false);
     ui->compressButton->setEnabled(false);
     ui->decompressButton->setEnabled(false);
 
+    // Connect buttons to slots
     connect(ui->pickFileButton, &QPushButton::clicked, this, &MainWindow::pickFile);
     connect(ui->createFileButton, &QPushButton::clicked, this, &MainWindow::createFile);
     connect(ui->editFileButton, &QPushButton::clicked, this, &MainWindow::editFile);
@@ -38,6 +61,7 @@ void MainWindow::pickFile()
 
     currentFilePath = filePath;
     displayFileInfo(filePath);
+
     ui->editFileButton->setEnabled(true);
     ui->compressButton->setEnabled(true);
     ui->decompressButton->setEnabled(true);
@@ -66,12 +90,10 @@ void MainWindow::editFile()
         return;
     }
 
-    // Create the editor window on the heap
     EditorWindow *editorWindow = new EditorWindow(this, currentFilePath);
 
-    // Connect the fileSaved signal to a lambda
     connect(editorWindow, &EditorWindow::fileSaved, this, [this](const QString &path){
-        this->displayFileInfo(path);
+        displayFileInfo(path);
     });
 
     editorWindow->show();
@@ -87,14 +109,14 @@ void MainWindow::displayFileInfo(const QString &filePath)
     ui->fileStatusValue->setText(info.exists() ? "File ready" : "File missing");
 }
 
-// Dummy compress function (to connect later to Huffman)
+// Dummy compress function
 void MainWindow::compressFile()
 {
     if (currentFilePath.isEmpty()) return;
     QMessageBox::information(this, "Compress", "Compress functionality will be implemented here.");
 }
 
-// Dummy decompress function (to connect later to Huffman)
+// Dummy decompress function
 void MainWindow::decompressFile()
 {
     if (currentFilePath.isEmpty()) return;
