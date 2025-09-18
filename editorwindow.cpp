@@ -47,4 +47,7 @@ void EditorWindow::saveFile()
     file.close();
 
     emit fileSaved(currentFilePath);
+
+    // Close this editor window and return to the previous window
+    this->close();
 }

@@ -61,15 +61,20 @@ void MainWindow::createFile()
 // Edit the current file
 void MainWindow::editFile()
 {
-    if (currentFilePath.isEmpty()) return;
+    if (currentFilePath.isEmpty()) {
+        QMessageBox::warning(this, "No file", "Please select a file first.");
+        return;
+    }
 
-    EditorWindow *editor = new EditorWindow(this, currentFilePath);
-    connect(editor, &EditorWindow::fileSaved, this, [=](const QString &savedFilePath){
-        currentFilePath = savedFilePath;
-        displayFileInfo(savedFilePath);
+    // Create the editor window on the heap
+    EditorWindow *editorWindow = new EditorWindow(this, currentFilePath);
+
+    // Connect the fileSaved signal to a lambda
+    connect(editorWindow, &EditorWindow::fileSaved, this, [this](const QString &path){
+        this->displayFileInfo(path);
     });
-    editor->setWindowTitle("Edit File");
-    editor->show();
+
+    editorWindow->show();
 }
 
 // Display file information in the UI
