@@ -51,21 +51,29 @@ void EditorWindow::loadFile(const QString &filePath)
 void EditorWindow::saveFile()
 {
     QString savePath = currentFilePath;
+
+    // If no file path yet, open Save As dialog
     if (savePath.isEmpty()) {
-        savePath = QFileDialog::getSaveFileName(this, "Save File");
-        if (savePath.isEmpty()) return;
+        savePath = QFileDialog::getSaveFileName(
+            this,
+            "Save File",
+            "untitled.txt",                    // default file name
+            "Text Files (*.txt);;All Files (*)" // filter
+        );
+        if (savePath.isEmpty()) return; // user canceled
         currentFilePath = savePath;
     }
 
     QFile file(savePath);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) return;
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QMessageBox::warning(this, "Error", "Cannot save file.");
+        return;
+    }
 
     QTextStream out(&file);
     out << ui.textEdit->toPlainText();
     file.close();
 
     emit fileSaved(currentFilePath);
-
-    // Close this editor window and return to the previous window
     this->close();
 }
