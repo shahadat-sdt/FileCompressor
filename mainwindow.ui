@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>938</width>
-    <height>731</height>
+    <width>600</width>
+    <height>400</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,60 +15,136 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
+
+    <!-- Menu-like buttons -->
     <item>
-     <widget class="QPushButton" name="pickFile">
-      <property name="text">
-       <string>Pick File</string>
+     <layout class="QHBoxLayout" name="fileOptionsLayout">
+      <item>
+       <widget class="QPushButton" name="pickFileButton">
+        <property name="text">
+         <string>Pick File</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="createFileButton">
+        <property name="text">
+         <string>Create File</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+
+    <!-- File information display -->
+    <item>
+     <widget class="QGroupBox" name="fileInfoGroupBox">
+      <property name="title">
+       <string>File Information</string>
       </property>
+      <layout class="QFormLayout" name="fileInfoLayout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="labelFileName">
+         <property name="text">
+          <string>Name:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="fileNameValue">
+         <property name="text">
+          <string>---</string>
+         </property>
+        </widget>
+       </item>
+
+       <item row="1" column="0">
+        <widget class="QLabel" name="labelFilePath">
+         <property name="text">
+          <string>Path:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="filePathValue">
+         <property name="text">
+          <string>---</string>
+         </property>
+        </widget>
+       </item>
+
+       <item row="2" column="0">
+        <widget class="QLabel" name="labelFileSize">
+         <property name="text">
+          <string>Size:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLabel" name="fileSizeValue">
+         <property name="text">
+          <string>---</string>
+         </property>
+        </widget>
+       </item>
+
+       <item row="3" column="0">
+        <widget class="QLabel" name="labelFileStatus">
+         <property name="text">
+          <string>Status:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLabel" name="fileStatusValue">
+         <property name="text">
+          <string>No file selected</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
+
+    <!-- Action buttons -->
     <item>
-     <widget class="QTextBrowser" name="fileName">
-      <property name="maximumSize">
-       <size>
-        <width>500</width>
-        <height>20</height>
-       </size>
-      </property>
-     </widget>
+     <layout class="QHBoxLayout" name="actionButtonsLayout">
+      <item>
+       <widget class="QPushButton" name="editFileButton">
+        <property name="text">
+         <string>Edit File</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="compressButton">
+        <property name="text">
+         <string>Compress</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="decompressButton">
+        <property name="text">
+         <string>Decompress</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
-    <item>
-     <widget class="QTextEdit" name="fileSize">
-      <property name="maximumSize">
-       <size>
-        <width>500</width>
-        <height>20</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPlainTextEdit" name="fileContent"/>
-    </item>
+
+    <!-- Status label -->
     <item>
      <widget class="QLabel" name="statusLabel">
       <property name="text">
-       <string/>
+       <string></string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignmentFlag::AlignCenter</set>
+       <set>Qt::AlignCenter</set>
       </property>
      </widget>
     </item>
-    <item>
-     <widget class="QPushButton" name="compressButton">
-      <property name="text">
-       <string>Compress</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="decompressButton">
-      <property name="text">
-       <string>Decompress</string>
-      </property>
-     </widget>
-    </item>
+
    </layout>
   </widget>
  </widget>
