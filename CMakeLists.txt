@@ -12,6 +12,8 @@ add_executable(FileCompressor
         main.cpp
         mainwindow.cpp
         mainwindow.h
+        editorwindow.cpp
+        editorwindow.h
         huffman.cpp
         huffman.h
 )

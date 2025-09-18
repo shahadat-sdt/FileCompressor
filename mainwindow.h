@@ -1,25 +1,30 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
 
 #include <QMainWindow>
+#include "editorwindow.h"  // <<<<<< Include this
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-class MainWindow : public QMainWindow {
+class MainWindow : public QMainWindow
+{
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
+    MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
 private slots:
-    void onCompressClicked();
-    void onDecompressClicked();
+    void pickFile();
+    void createFile();
+    void editFile();
+    void compressFile();
+    void decompressFile();
 
 private:
     Ui::MainWindow *ui;
-};
+    QString currentFilePath;
 
-#endif // MAINWINDOW_H
+    void displayFileInfo(const QString &filePath);
+};
