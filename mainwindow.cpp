@@ -6,6 +6,8 @@
 #include <QFileInfo>
 #include <QDebug>
 
+#include "huffman.h"
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -126,15 +128,30 @@ void MainWindow::displayFileInfo(const QString &filePath)
     ui->fileStatusValue->setText(info.exists() ? "File ready" : "File missing");
 }
 
-// Dummy compress function (to connect la
+// Compress using Huffman
 void MainWindow::compressFile()
 {
     if (currentFilePath.isEmpty()) return;
-    QMessageBox::information(this, "Compress", "Compress functionality will be implemented here.");
+
+    QString outFile = QFileDialog::getSaveFileName(this, "Save Compressed File", currentFilePath + ".huff", "Huffman Files (*.huff)");
+    if (outFile.isEmpty()) return;
+
+    std::string err;
+    bool ok = Huffman::compressFile(currentFilePath.toStdString(), outFile.toStdString(), err);
+    if (ok) QMessageBox::information(this, "Compress", "File compressed successfully!");
+    else QMessageBox::warning(this, "Compress Failed", QString::fromStdString(err));
 }
 
+// Decompress using Huffman
 void MainWindow::decompressFile()
 {
     if (currentFilePath.isEmpty()) return;
-    QMessageBox::information(this, "Decompress", "Decompress functionality will be implemented here.");
+
+    QString outFile = QFileDialog::getSaveFileName(this, "Save Decompressed File", "decompressed.txt", "Text Files (*.txt)");
+    if (outFile.isEmpty()) return;
+
+    std::string err;
+    bool ok = Huffman::decompressFile(currentFilePath.toStdString(), outFile.toStdString(), err);
+    if (ok) QMessageBox::information(this, "Decompress", "File decompressed successfully!");
+    else QMessageBox::warning(this, "Decompress Failed", QString::fromStdString(err));
 }
