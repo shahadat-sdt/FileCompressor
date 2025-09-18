@@ -4,11 +4,28 @@
 #include <QTextStream>
 #include <QMessageBox>
 
+
 EditorWindow::EditorWindow(QWidget *parent, const QString &filePath)
     : QWidget(parent),
       currentFilePath(filePath)
 {
     ui.setupUi(this);
+
+    // ------------------------------
+    // Make the editor window full screen
+    this->showMaximized();
+
+    // ------------------------------
+    // Style the text editor and save button
+    ui.textEdit->setStyleSheet("font-size: 14pt; padding: 5px;");
+    ui.saveButton->setStyleSheet(
+        "font-size: 12pt;"
+        "padding: 8px 20px;"
+        "background-color: #4CAF50;"
+        "color: white;"
+        "border-radius: 5px;"
+    );
+    // ------------------------------
 
     connect(ui.saveButton, &QPushButton::clicked, this, &EditorWindow::saveFile);
 
@@ -16,6 +33,7 @@ EditorWindow::EditorWindow(QWidget *parent, const QString &filePath)
         loadFile(currentFilePath);
     }
 }
+
 
 EditorWindow::~EditorWindow() {}
 
