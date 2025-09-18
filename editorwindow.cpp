@@ -1,79 +1,82 @@
 #include "editorwindow.h"
+#include "ui_editorwindow.h"
+
 #include <QFile>
 #include <QFileDialog>
 #include <QTextStream>
 #include <QMessageBox>
 
-
 EditorWindow::EditorWindow(QWidget *parent, const QString &filePath)
-    : QWidget(parent),
+    : QWidget(nullptr), // top-level window
+      ui(new Ui::EditorWindow),
       currentFilePath(filePath)
 {
-    ui.setupUi(this);
+    ui->setupUi(this);
 
-    // ------------------------------
-    // Make the editor window full screen
-    this->showMaximized();
-
-    // ------------------------------
-    // Style the text editor and save button
-    ui.textEdit->setStyleSheet("font-size: 14pt; padding: 5px;");
-    ui.saveButton->setStyleSheet(
+    // Modern Save button style
+    ui->saveButton->setStyleSheet(
+        "QPushButton {"
         "font-size: 12pt;"
         "padding: 8px 20px;"
-        "background-color: #4CAF50;"
+        "background-color: #0078D7;"
         "color: white;"
-        "border-radius: 5px;"
+        "border: none;"
+        "border-radius: 4px;"
+        "}"
+        "QPushButton:hover { background-color: #005A9E; }"
+        "QPushButton:pressed { background-color: #004578; }"
     );
-    // ------------------------------
 
-    connect(ui.saveButton, &QPushButton::clicked, this, &EditorWindow::saveFile);
+    connect(ui->saveButton, &QPushButton::clicked, this, &EditorWindow::saveFile);
 
     if (!currentFilePath.isEmpty()) {
         loadFile(currentFilePath);
     }
+
+    // Make window resizeable with layouts
+    this->setMinimumSize(400, 300);
+    this->resize(800, 600);
+    this->setWindowFlags(Qt::Window);
 }
 
-
-EditorWindow::~EditorWindow() {}
+EditorWindow::~EditorWindow()
+{
+    delete ui;
+}
 
 void EditorWindow::loadFile(const QString &filePath)
 {
     QFile file(filePath);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        return;
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return;
 
     QTextStream in(&file);
-    ui.textEdit->setPlainText(in.readAll());
+    ui->textEdit->setPlainText(in.readAll());
     file.close();
 }
 
 void EditorWindow::saveFile()
 {
     QString savePath = currentFilePath;
-
-    // If no file path yet, open Save As dialog
     if (savePath.isEmpty()) {
         savePath = QFileDialog::getSaveFileName(
             this,
             "Save File",
-            "untitled.txt",                    // default file name
-            "Text Files (*.txt);;All Files (*)" // filter
+            "untitled.txt",   // placeholder name
+            "Text Files (*.txt)"
         );
-        if (savePath.isEmpty()) return; // user canceled
+        if (savePath.isEmpty()) return;
         currentFilePath = savePath;
     }
 
     QFile file(savePath);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QMessageBox::warning(this, "Error", "Cannot save file.");
-        return;
-    }
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) return;
 
     QTextStream out(&file);
-    out << ui.textEdit->toPlainText();
+    out << ui->textEdit->toPlainText();
     file.close();
 
     emit fileSaved(currentFilePath);
+
+    // Close editor window and return to main window
     this->close();
 }

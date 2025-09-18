@@ -1,7 +1,10 @@
 #pragma once
 
 #include <QWidget>
-#include "ui_editorwindow.h" // generated from editorwindow.ui
+
+QT_BEGIN_NAMESPACE
+namespace Ui { class EditorWindow; }
+QT_END_NAMESPACE
 
 class EditorWindow : public QWidget
 {
@@ -18,7 +21,7 @@ private slots:
     void saveFile();
 
 private:
-    Ui::EditorWindow ui; // NOT a pointer
+    Ui::EditorWindow *ui;
     QString currentFilePath;
 
     void loadFile(const QString &filePath);

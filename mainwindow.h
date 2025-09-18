@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QMainWindow>
-#include "editorwindow.h"  // <<<<<< Include this
+#include "editorwindow.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

@@ -4,7 +4,6 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QFileInfo>
-#include <QTextStream>
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -13,7 +12,12 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // Modern flat button style
+    // Disable edit/compress/decompress buttons initially
+    ui->editFileButton->setEnabled(false);
+    ui->compressButton->setEnabled(false);
+    ui->decompressButton->setEnabled(false);
+
+    // Modern flat buttons
     QString btnStyle =
         "QPushButton {"
         "font-size: 12pt;"
@@ -32,20 +36,15 @@ MainWindow::MainWindow(QWidget *parent)
     ui->compressButton->setStyleSheet(btnStyle);
     ui->decompressButton->setStyleSheet(btnStyle);
 
-    // Optional: add spacing between layouts
-    ui->centralwidget->layout()->setSpacing(10);
-
-    // Disable edit/compress/decompress buttons initially
-    ui->editFileButton->setEnabled(false);
-    ui->compressButton->setEnabled(false);
-    ui->decompressButton->setEnabled(false);
-
-    // Connect buttons to slots
+    // Connect buttons
     connect(ui->pickFileButton, &QPushButton::clicked, this, &MainWindow::pickFile);
     connect(ui->createFileButton, &QPushButton::clicked, this, &MainWindow::createFile);
     connect(ui->editFileButton, &QPushButton::clicked, this, &MainWindow::editFile);
     connect(ui->compressButton, &QPushButton::clicked, this, &MainWindow::compressFile);
     connect(ui->decompressButton, &QPushButton::clicked, this, &MainWindow::decompressFile);
+
+    // Apply OS theme (dark/light)
+    this->setStyleSheet("QMainWindow { background-color: palette(window); }");
 }
 
 MainWindow::~MainWindow()
@@ -61,7 +60,6 @@ void MainWindow::pickFile()
 
     currentFilePath = filePath;
     displayFileInfo(filePath);
-
     ui->editFileButton->setEnabled(true);
     ui->compressButton->setEnabled(true);
     ui->decompressButton->setEnabled(true);
@@ -70,16 +68,28 @@ void MainWindow::pickFile()
 // Create a new text file
 void MainWindow::createFile()
 {
-    EditorWindow *editor = new EditorWindow(this);
-    connect(editor, &EditorWindow::fileSaved, this, [=](const QString &savedFilePath){
+    // Hide main window
+    this->hide();
+
+    // Create editor window for a new file
+    EditorWindow *editorWindow = new EditorWindow(nullptr);
+    editorWindow->setAttribute(Qt::WA_DeleteOnClose); // Auto-delete when closed
+    editorWindow->setWindowTitle("New File");
+    editorWindow->show();
+
+    // Restore main window after editor closes
+    connect(editorWindow, &EditorWindow::destroyed, this, [this](){
+        this->show();
+    });
+
+    // Update UI when file is saved
+    connect(editorWindow, &EditorWindow::fileSaved, this, [this](const QString &savedFilePath){
         currentFilePath = savedFilePath;
         displayFileInfo(savedFilePath);
         ui->editFileButton->setEnabled(true);
         ui->compressButton->setEnabled(true);
         ui->decompressButton->setEnabled(true);
     });
-    editor->setWindowTitle("New File");
-    editor->show();
 }
 
 // Edit the current file
@@ -90,13 +100,20 @@ void MainWindow::editFile()
         return;
     }
 
-    EditorWindow *editorWindow = new EditorWindow(this, currentFilePath);
+    // Hide main window
+    this->hide();
+
+    EditorWindow *editorWindow = new EditorWindow(nullptr, currentFilePath);
+    editorWindow->setAttribute(Qt::WA_DeleteOnClose);
+    editorWindow->show();
+
+    connect(editorWindow, &EditorWindow::destroyed, this, [this](){
+        this->show();
+    });
 
     connect(editorWindow, &EditorWindow::fileSaved, this, [this](const QString &path){
         displayFileInfo(path);
     });
-
-    editorWindow->show();
 }
 
 // Display file information in the UI
@@ -109,14 +126,13 @@ void MainWindow::displayFileInfo(const QString &filePath)
     ui->fileStatusValue->setText(info.exists() ? "File ready" : "File missing");
 }
 
-// Dummy compress function
+// Dummy compress function (to connect la
 void MainWindow::compressFile()
 {
     if (currentFilePath.isEmpty()) return;
     QMessageBox::information(this, "Compress", "Compress functionality will be implemented here.");
 }
 
-// Dummy decompress function
 void MainWindow::decompressFile()
 {
     if (currentFilePath.isEmpty()) return;
