@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AdvancedDetailsWindow</class>
+ <widget class="QMainWindow" name="AdvancedDetailsWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>600</width>
+    <height>500</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Advanced Details</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+
+    <!-- Sorting Selection -->
+    <item>
+     <layout class="QHBoxLayout" name="sortingLayout">
+      <item>
+       <widget class="QLabel" name="labelSorting">
+        <property name="text"><string>Sorting Algorithm:</string></property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="sortingComboBox">
+        <item><property name="text"><string>Insertion Sort</string></property></item>
+        <item><property name="text"><string>Merge Sort</string></property></item>
+        <item><property name="text"><string>Selection Sort</string></property></item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="sortButton">
+        <property name="text"><string>Sort</string></property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+
+    <!-- Word Frequency Table -->
+    <item>
+     <widget class="QTableWidget" name="frequencyTable">
+      <property name="columnCount"><number>2</number></property>
+      <property name="rowCount"><number>0</number></property>
+      <column>
+       <property name="text"><string>Character/Word</string></property>
+      </column>
+      <column>
+       <property name="text"><string>Frequency</string></property>
+      </column>
+     </widget>
+    </item>
+
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -13,7 +13,13 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+
 {
+    advancedWindow = new AdvancedDetailsWindow(this);
+    advancedWindow->setAttribute(Qt::WA_DeleteOnClose); // auto delete when closed
+
+
+
     ui->setupUi(this);
 
     // Disable initially
@@ -21,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->compressButton->setEnabled(false);
     ui->decompressButton->setEnabled(false);
     ui->viewCodeButton->setEnabled(false);
+    ui->advancedDetailsButton->setEnabled(false);
 
     // Connect
     connect(ui->pickFileButton, &QPushButton::clicked, this, &MainWindow::pickFile);
@@ -29,6 +36,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->compressButton, &QPushButton::clicked, this, &MainWindow::compressFile);
     connect(ui->decompressButton, &QPushButton::clicked, this, &MainWindow::decompressFile);
     connect(ui->viewCodeButton, &QPushButton::clicked, this, &MainWindow::showCompressedCode);
+    connect(ui->advancedDetailsButton, &QPushButton::clicked, this, &MainWindow::openAdvancedDetails);
+
 
     // Apply OS theme background
     this->setStyleSheet("QMainWindow { background-color: palette(window); }");
@@ -183,4 +192,56 @@ void MainWindow::updateCompressionInfo(const QString &original, const QString &c
     } else {
         ui->ratioValue->setText("---");
     }
+
+
 }
+
+void MainWindow::openAdvancedDetails()
+{
+    if(currentFilePath.isEmpty()) {
+        QMessageBox::warning(this, "No file", "Please select a file first.");
+        return;
+    }
+
+    // Count letter frequency
+    QMap<QString, int> freqMap;
+    QFile file(currentFilePath);
+    if(file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream in(&file);
+        while(!in.atEnd()) {
+            QString line = in.readLine();
+            for(QChar c : line) {
+                if(c.isLetter()) {
+                    QString key = c.toLower();
+                    freqMap[key]++;
+                }
+            }
+        }
+        file.close();
+    }
+
+    // Convert to QVector for sorting
+    QVector<QPair<QString, int>> vec;
+    for(auto it = freqMap.begin(); it != freqMap.end(); ++it) {
+        vec.append(qMakePair(it.key(), it.value()));
+    }
+
+    // Sort descending by frequency
+    std::sort(vec.begin(), vec.end(), [](const QPair<QString,int> &a, const QPair<QString,int> &b){
+        return a.second > b.second;
+    });
+
+    // Keep only top 10
+    if(vec.size() > 10) vec.resize(10);
+
+    // Convert back to QMap
+    QMap<QString,int> topFreqMap;
+    for(const auto &p : vec)
+        topFreqMap[p.first] = p.second;
+
+    // Send to advanced window
+    advancedWindow->setFrequencyMap(topFreqMap);
+    advancedWindow->show();
+}
+
+

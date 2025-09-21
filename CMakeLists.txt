@@ -16,6 +16,7 @@ add_executable(FileCompressor
         editorwindow.h
         huffman.cpp
         huffman.h
+        advancedDetailsWindow.cpp
 )
 
 target_link_libraries(FileCompressor

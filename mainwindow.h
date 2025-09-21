@@ -2,13 +2,15 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "advancedDetailsWindow.h"
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
+namespace Ui {
+    class MainWindow;
+}
 QT_END_NAMESPACE
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
@@ -22,8 +24,11 @@ private slots:
     void compressFile();
     void decompressFile();
     void showCompressedCode();
+    void openAdvancedDetails();
 
 private:
+    AdvancedDetailsWindow *advancedWindow;
+    // Use the correct class name
     Ui::MainWindow *ui;
     QString currentFilePath;
     QString lastCompressedPath;
