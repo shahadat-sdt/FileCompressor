@@ -6,6 +6,7 @@
 #include <QFileInfo>
 #include <QTextStream>
 #include <QDebug>
+#include <qtextedit.h>
 
 #include "editorwindow.h"
 #include "huffman.h"   // your Huffman class
@@ -41,12 +42,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Apply OS theme background
     this->setStyleSheet("QMainWindow { background-color: palette(window); }");
+
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
+
 
 void MainWindow::pickFile()
 {
@@ -126,8 +129,11 @@ void MainWindow::compressFile()
         QFileInfo inInfo(currentFilePath), outInfo(outPath);
         updateCompressionInfo(QString::number(inInfo.size()), QString::number(outInfo.size()));
 
-        ui->viewCodeButton->setEnabled(true);
+
         QMessageBox::information(this, "Success", "File compressed successfully.");
+        ui->advancedDetailsButton->setEnabled(true);
+        ui->viewCodeButton->setEnabled(true);
+
     } else {
         QMessageBox::warning(this, "Error", QString::fromStdString(err));
     }
@@ -165,7 +171,7 @@ void MainWindow::showCompressedCode()
     file.close();
 
     QString hex = data.toHex(' ').toUpper();
-    QMessageBox::information(this, "Compressed Data", hex.left(1000) + (hex.size() > 1000 ? " ..." : ""));
+    showCompressedDataFull(hex);
 }
 
 void MainWindow::displayFileInfo(const QString &filePath)
@@ -242,6 +248,27 @@ void MainWindow::openAdvancedDetails()
     // Send to advanced window
     advancedWindow->setFrequencyMap(topFreqMap);
     advancedWindow->show();
+}
+void MainWindow::showCompressedDataFull(const QString &hexData)
+{
+    QDialog *dialog = new QDialog(this);
+    dialog->setWindowTitle("Compressed Data");
+    dialog->resize(600, 400);
+
+    QVBoxLayout *layout = new QVBoxLayout(dialog);
+
+    QTextEdit *textEdit = new QTextEdit(dialog);
+    textEdit->setReadOnly(true);
+    textEdit->setText(hexData);
+    layout->addWidget(textEdit);
+
+    QPushButton *closeButton = new QPushButton("Close", dialog);
+    layout->addWidget(closeButton);
+
+    connect(closeButton, &QPushButton::clicked, dialog, &QDialog::accept);
+
+    dialog->setLayout(layout);
+    dialog->exec();
 }
 
 
