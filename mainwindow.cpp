@@ -4,9 +4,11 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QFileInfo>
+#include <QTextStream>
 #include <QDebug>
 
-#include "huffman.h"
+#include "editorwindow.h"
+#include "huffman.h"   // your Huffman class
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -14,39 +16,21 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // Disable edit/compress/decompress buttons initially
+    // Disable initially
     ui->editFileButton->setEnabled(false);
     ui->compressButton->setEnabled(false);
     ui->decompressButton->setEnabled(false);
+    ui->viewCodeButton->setEnabled(false);
 
-    // Modern flat buttons
-    // QString btnStyle =
-    //     "QPushButton {"
-    //     "font-size: 12pt;"
-    //     "padding: 8px 20px;"
-    //     "background-color: #0078D7;"
-    //     "color: white;"
-    //     "border: none;"
-    //     "border-radius: 4px;"
-    //     "}"
-    //     "QPushButton:hover { background-color: #005A9E; }"
-    //     "QPushButton:pressed { background-color: #004578; }"
-    // ;
-    //
-    // ui->pickFileButton->setStyleSheet(btnStyle);
-    // ui->createFileButton->setStyleSheet(btnStyle);
-    // ui->editFileButton->setStyleSheet(btnStyle);
-    // ui->compressButton->setStyleSheet(btnStyle);
-    // ui->decompressButton->setStyleSheet(btnStyle);
-
-    // Connect buttons
+    // Connect
     connect(ui->pickFileButton, &QPushButton::clicked, this, &MainWindow::pickFile);
     connect(ui->createFileButton, &QPushButton::clicked, this, &MainWindow::createFile);
     connect(ui->editFileButton, &QPushButton::clicked, this, &MainWindow::editFile);
     connect(ui->compressButton, &QPushButton::clicked, this, &MainWindow::compressFile);
     connect(ui->decompressButton, &QPushButton::clicked, this, &MainWindow::decompressFile);
+    connect(ui->viewCodeButton, &QPushButton::clicked, this, &MainWindow::showCompressedCode);
 
-    // Apply OS theme (dark/light)
+    // Apply OS theme background
     this->setStyleSheet("QMainWindow { background-color: palette(window); }");
 }
 
@@ -55,7 +39,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-// Pick an existing text file
 void MainWindow::pickFile()
 {
     QString filePath = QFileDialog::getOpenFileName(this, "Select a text file", "", "Text Files (*.txt);;All Files (*)");
@@ -63,6 +46,7 @@ void MainWindow::pickFile()
 
     currentFilePath = filePath;
     displayFileInfo(filePath);
+
     ui->editFileButton->setEnabled(true);
     ui->compressButton->setEnabled(true);
     ui->decompressButton->setEnabled(true);
@@ -119,7 +103,62 @@ void MainWindow::editFile()
     });
 }
 
-// Display file information in the UI
+void MainWindow::compressFile()
+{
+    if (currentFilePath.isEmpty()) return;
+
+    QString outPath = QFileDialog::getSaveFileName(this, "Save Compressed File", "", "Compressed Files (*.huff)");
+    if (outPath.isEmpty()) return;
+
+    std::string err;
+    if (Huffman::compressFile(currentFilePath.toStdString(), outPath.toStdString(), err)) {
+        lastCompressedPath = outPath;
+
+        QFileInfo inInfo(currentFilePath), outInfo(outPath);
+        updateCompressionInfo(QString::number(inInfo.size()), QString::number(outInfo.size()));
+
+        ui->viewCodeButton->setEnabled(true);
+        QMessageBox::information(this, "Success", "File compressed successfully.");
+    } else {
+        QMessageBox::warning(this, "Error", QString::fromStdString(err));
+    }
+}
+
+void MainWindow::decompressFile()
+{
+    if (currentFilePath.isEmpty()) return;
+
+    QString outPath = QFileDialog::getSaveFileName(this, "Save Decompressed File", "", "Text Files (*.txt)");
+    if (outPath.isEmpty()) return;
+
+    std::string err;
+    if (Huffman::decompressFile(currentFilePath.toStdString(), outPath.toStdString(), err)) {
+        QMessageBox::information(this, "Success", "File decompressed successfully.");
+    } else {
+        QMessageBox::warning(this, "Error", QString::fromStdString(err));
+    }
+}
+
+void MainWindow::showCompressedCode()
+{
+    if (lastCompressedPath.isEmpty()) {
+        QMessageBox::information(this, "No Code", "No compressed file available.");
+        return;
+    }
+
+    QFile file(lastCompressedPath);
+    if (!file.open(QIODevice::ReadOnly)) {
+        QMessageBox::warning(this, "Error", "Cannot open compressed file.");
+        return;
+    }
+
+    QByteArray data = file.readAll();
+    file.close();
+
+    QString hex = data.toHex(' ').toUpper();
+    QMessageBox::information(this, "Compressed Data", hex.left(1000) + (hex.size() > 1000 ? " ..." : ""));
+}
+
 void MainWindow::displayFileInfo(const QString &filePath)
 {
     QFileInfo info(filePath);
@@ -129,30 +168,19 @@ void MainWindow::displayFileInfo(const QString &filePath)
     ui->fileStatusValue->setText(info.exists() ? "File ready" : "File missing");
 }
 
-// Compress using Huffman
-void MainWindow::compressFile()
+void MainWindow::updateCompressionInfo(const QString &original, const QString &compressed)
 {
-    if (currentFilePath.isEmpty()) return;
+    ui->originalSizeValue->setText(original + " bytes");
+    ui->compressedSizeValue->setText(compressed + " bytes");
 
-    QString outFile = QFileDialog::getSaveFileName(this, "Save Compressed File", currentFilePath + ".huff", "Huffman Files (*.huff)");
-    if (outFile.isEmpty()) return;
+    bool ok1, ok2;
+    double o = original.toDouble(&ok1);
+    double c = compressed.toDouble(&ok2);
 
-    std::string err;
-    bool ok = Huffman::compressFile(currentFilePath.toStdString(), outFile.toStdString(), err);
-    if (ok) QMessageBox::information(this, "Compress", "File compressed successfully!");
-    else QMessageBox::warning(this, "Compress Failed", QString::fromStdString(err));
-}
-
-// Decompress using Huffman
-void MainWindow::decompressFile()
-{
-    if (currentFilePath.isEmpty()) return;
-
-    QString outFile = QFileDialog::getSaveFileName(this, "Save Decompressed File", "decompressed.txt", "Text Files (*.txt)");
-    if (outFile.isEmpty()) return;
-
-    std::string err;
-    bool ok = Huffman::decompressFile(currentFilePath.toStdString(), outFile.toStdString(), err);
-    if (ok) QMessageBox::information(this, "Decompress", "File decompressed successfully!");
-    else QMessageBox::warning(this, "Decompress Failed", QString::fromStdString(err));
+    if (ok1 && ok2 && o > 0) {
+        double ratio = (1.0 - (c / o)) * 100.0;
+        ui->ratioValue->setText(QString::number(ratio, 'f', 2) + " %");
+    } else {
+        ui->ratioValue->setText("---");
+    }
 }

@@ -1,7 +1,7 @@
-#pragma once
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "editorwindow.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -21,10 +21,15 @@ private slots:
     void editFile();
     void compressFile();
     void decompressFile();
+    void showCompressedCode();
 
 private:
     Ui::MainWindow *ui;
     QString currentFilePath;
+    QString lastCompressedPath;
 
     void displayFileInfo(const QString &filePath);
+    void updateCompressionInfo(const QString &original, const QString &compressed);
 };
+
+#endif // MAINWINDOW_H
