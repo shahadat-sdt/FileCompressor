@@ -20,23 +20,24 @@ MainWindow::MainWindow(QWidget *parent)
     ui->decompressButton->setEnabled(false);
 
     // Modern flat buttons
-    QString btnStyle =
-        "QPushButton {"
-        "font-size: 12pt;"
-        "padding: 8px 20px;"
-        "background-color: #0078D7;"
-        "color: white;"
-        "border: none;"
-        "border-radius: 4px;"
-        "}"
-        "QPushButton:hover { background-color: #005A9E; }"
-        "QPushButton:pressed { background-color: #004578; }";
-
-    ui->pickFileButton->setStyleSheet(btnStyle);
-    ui->createFileButton->setStyleSheet(btnStyle);
-    ui->editFileButton->setStyleSheet(btnStyle);
-    ui->compressButton->setStyleSheet(btnStyle);
-    ui->decompressButton->setStyleSheet(btnStyle);
+    // QString btnStyle =
+    //     "QPushButton {"
+    //     "font-size: 12pt;"
+    //     "padding: 8px 20px;"
+    //     "background-color: #0078D7;"
+    //     "color: white;"
+    //     "border: none;"
+    //     "border-radius: 4px;"
+    //     "}"
+    //     "QPushButton:hover { background-color: #005A9E; }"
+    //     "QPushButton:pressed { background-color: #004578; }"
+    // ;
+    //
+    // ui->pickFileButton->setStyleSheet(btnStyle);
+    // ui->createFileButton->setStyleSheet(btnStyle);
+    // ui->editFileButton->setStyleSheet(btnStyle);
+    // ui->compressButton->setStyleSheet(btnStyle);
+    // ui->decompressButton->setStyleSheet(btnStyle);
 
     // Connect buttons
     connect(ui->pickFileButton, &QPushButton::clicked, this, &MainWindow::pickFile);
