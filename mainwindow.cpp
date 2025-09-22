@@ -143,7 +143,7 @@ void MainWindow::decompressFile()
 {
     if (currentFilePath.isEmpty()) return;
 
-    QString outPath = QFileDialog::getSaveFileName(this, "Save Decompressed File", "", "Text Files (*.txt)");
+    QString outPath = QFileDialog::getSaveFileName(this, "Select Decompressing File", "", "Text Files (*.huff)");
     if (outPath.isEmpty()) return;
 
     std::string err;
